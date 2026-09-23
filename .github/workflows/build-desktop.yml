@@ -30,6 +30,7 @@ jobs:
         run: dist/desktop-build/LibraryAnalysis.app/Contents/MacOS/LibraryAnalysis --self-test
       - name: Smoke test Windows application
         if: runner.os == 'Windows'
+        timeout-minutes: 5
         shell: pwsh
         run: |
           $test = Start-Process -FilePath .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe -ArgumentList '--self-test' -Wait -PassThru

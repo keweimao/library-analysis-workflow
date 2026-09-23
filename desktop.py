@@ -450,16 +450,11 @@ def self_test():
     server.block_on_close = False
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    try:
-        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/api/health", timeout=10) as response:
-            assert json.load(response)["app"] == "library-analysis"
-        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/", timeout=10) as response:
-            assert b"Interactive Language Models" in response.read()
-    finally:
-        server.shutdown()
-        server.server_close()
-        thread.join(timeout=10)
-        shutil.rmtree(folder, ignore_errors=True)
+    with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/api/health", timeout=10) as response:
+        assert json.load(response)["app"] == "library-analysis"
+    with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/", timeout=10) as response:
+        assert b"Interactive Language Models" in response.read()
+    # The smoke process exits immediately; Windows can keep imported database files open.
     return 0
 
 
