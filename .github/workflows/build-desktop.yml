@@ -1,0 +1,68 @@
+name: Build desktop packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            label: macOS-AppleSilicon
+          - runner: macos-15-intel
+            label: macOS-Intel
+          - runner: windows-2025
+            label: Windows-x64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install build requirements
+        run: python -m pip install -r requirements-desktop.txt
+      - name: Build application
+        run: python packaging/build_desktop.py
+      - name: Smoke test macOS application
+        if: runner.os == 'macOS'
+        run: dist/desktop-build/LibraryAnalysis.app/Contents/MacOS/LibraryAnalysis --self-test
+      - name: Smoke test Windows application
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe --self-test
+          if ($LASTEXITCODE -ne 0) { throw 'Desktop smoke test failed' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.label }}
+          path: dist/LibraryAnalysis-0.2.0-alpha-${{ matrix.label }}.zip
+          if-no-files-found: error
+          retention-days: 30
+
+  combined-mac:
+    needs: native
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: macOS-AppleSilicon
+          path: artifacts/arm
+      - uses: actions/download-artifact@v4
+        with:
+          name: macOS-Intel
+          path: artifacts/intel
+      - name: Combine Mac binaries
+        run: |
+          python packaging/combine_mac.py \
+            artifacts/arm/LibraryAnalysis-0.2.0-alpha-macOS-AppleSilicon.zip \
+            artifacts/intel/LibraryAnalysis-0.2.0-alpha-macOS-Intel.zip \
+            dist/LibraryAnalysis-0.2.0-alpha-macOS.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macOS
+          path: dist/LibraryAnalysis-0.2.0-alpha-macOS.zip
+          if-no-files-found: error
+          retention-days: 30

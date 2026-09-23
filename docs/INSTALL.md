@@ -1,13 +1,23 @@
-# Library Analysis Alpha: Installation and First Run
+# Library Analysis: Installation and First Run
 
-Version: 0.2.0-alpha. Updated September 18, 2026.
+Version: 0.2.0-alpha. Updated September 23, 2026.
 
-## Choose Your Package
+## Desktop Download (Recommended)
 
-- macOS: `LibraryAnalysis-0.2.0-alpha-macOS.zip`
-- Windows: `LibraryAnalysis-0.2.0-alpha-Windows.zip`
+The compiled desktop packages include Python and the application dependencies. They do not require Python or Ollama to be installed separately. Download the package for your operating system, extract it, and open the application:
 
-These are portable source packages with a guided launcher, not signed native installers. They include the application, pinned Python dependencies, synthetic CSV, and documentation. Model weights and Python itself are not bundled.
+- macOS: `LibraryAnalysis-0.2.0-alpha-macOS.zip` contains an Apple Silicon app and an Intel app. Open the one matching your Mac.
+- Windows x64: `LibraryAnalysis-0.2.0-alpha-Windows-x64.zip` contains `LibraryAnalysis/LibraryAnalysis.exe`.
+
+Select a model and click **Install and open**. The setup window downloads a verified Ollama runtime into your user folder if needed, then downloads the model and shows progress. A browser window opens when ready. Keep the desktop window open while using the application; later launches reuse the downloads and saved work. **Open analysis** reopens the browser.
+
+The first download may be several gigabytes. Qwen 9B is intended for a computer with roughly 32 GB RAM; the smaller 4B option is selected automatically below 16 GB and needs more careful result review. A managed computer may still block unsigned applications or downloads. Use the operating system's normal Open/security workflow where permitted; these packages are not signed or notarized.
+
+The included CSV has synthetic sample comments. Saved tasks, imported CSV copies, and downloaded models stay in the user's application-data folder. The first run needs internet; later local analysis can work offline. See [the package's START HERE guide](../packaging/DESKTOP.md) for storage locations and updates.
+
+## Source Launcher (Developer Option)
+
+The source packages are named `LibraryAnalysis-0.2.0-alpha-source-macOS.zip` and `LibraryAnalysis-0.2.0-alpha-source-Windows.zip`. They require a separate Python and Ollama installation. The following instructions apply only to these source packages.
 
 ## Requirements
 
@@ -67,7 +77,7 @@ Removing the extracted folder does not delete saved data or Ollama models. Delet
 
 ## Rebuild and Verification
 
-From the repository, run `python3 packaging/build.py`. It builds both platform ZIPs into `dist/` from an explicit file allowlist. Each ZIP contains `MANIFEST.json` with SHA-256 checksums for the application files. No user data, communications, or development environments are included.
+From the repository, run `python3 packaging/build.py` for source ZIPs. For compiled desktop packages, install `requirements-desktop.txt` on each target operating system and run `python packaging/build_desktop.py`. The automated native-build workflow uses macOS Intel, macOS Apple Silicon, and Windows runners, then combines the two Mac apps into one Mac ZIP. No user data, communications, or development environments are included.
 
 The launcher can be tested in an isolated directory with `python3 launcher.py --home /tmp/library-test --skip-model --no-browser --port 8021`. This skips model preparation only; analysis still requires a local model.
 

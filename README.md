@@ -16,7 +16,7 @@ The app supports:
 
 ## Run
 
-For desktop packages, follow [installation and first run](docs/INSTALL.md). Mac and Windows launchers create a local Python environment, show download progress, and open the browser.
+For desktop packages, follow [installation and first run](docs/INSTALL.md). The compiled Mac and Windows downloads include Python and application dependencies. Their setup window downloads a local Ollama runtime and model with progress.
 
 ```bash
 cd library-analysis-workflow

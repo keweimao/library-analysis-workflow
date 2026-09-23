@@ -14,7 +14,7 @@ def build():
     output = ROOT / "dist"
     output.mkdir(exist_ok=True)
     for platform, launcher in [("macOS", "Start Library Analysis.command"), ("Windows", "Start Library Analysis.cmd")]:
-        archive = output / f"LibraryAnalysis-{VERSION}-{platform}.zip"
+        archive = output / f"LibraryAnalysis-{VERSION}-source-{platform}.zip"
         prefix = f"LibraryAnalysis-{VERSION}/"
         manifest = {}
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as bundle:
