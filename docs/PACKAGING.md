@@ -2,7 +2,7 @@
 
 ## Approach
 
-Use native, self-contained desktop bundles for local single-user installs. PyInstaller includes Python, the application, and its Python dependencies. A small Qt setup window downloads a pinned Ollama runtime and a selected local model into the user's application-data directory. Later launches reuse them. Docker is not used for this desktop release because users would still need to install and start Docker Desktop and configure its virtualization backend.
+Use native, self-contained desktop bundles for local single-user installs. PyInstaller includes Python, the application, and its Python dependencies. Mac uses a Qt setup window; Windows uses separate console-visible install and start scripts. Setup downloads a pinned Ollama runtime and a selected local model into the user's application-data directory. Later launches reuse them. Docker is not used for this desktop release because users would still need to install and start Docker Desktop and configure its virtualization backend.
 
 The Mac download contains separate Apple Silicon and Intel apps; the Windows download contains an x64 executable. The app serves its existing browser interface on a random localhost port and starts its own Ollama process on a separate localhost port. Closing the desktop window stops both. The app uses its own model directory and disables Ollama cloud access for the process it starts.
 
