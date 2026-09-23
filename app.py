@@ -30,7 +30,7 @@ from jsonschema import validate, ValidationError
 
 ROOT = Path(__file__).resolve().parent
 DATA_DIR = Path(os.getenv("LIBRARY_DATA_DIR", str(ROOT / "data"))).expanduser().resolve()
-APP_VERSION = "0.2.0-alpha"
+APP_VERSION = "0.2.0-alpha.3"
 STUDY_MODE = os.getenv("LIBRARY_STUDY_MODE", "0") == "1"
 RUN_EVENTS: Dict[str, threading.Event] = {}
 UPLOAD_DIR = DATA_DIR / "uploads"
@@ -42,6 +42,7 @@ STUDY_DIR = DATA_DIR / "study"
 PARTICIPANT_DIR = STUDY_DIR / "participants"
 STUDY_EVENTS_PATH = STUDY_DIR / "events.jsonl"
 STATIC_DIR = ROOT / "static"
+PIPELINE_DIGEST_PATH = ROOT / "pipeline.sha256"
 OLLAMA_LIBRARY_URL = "https://ollama.com/library"
 CONSENT_VERSION = "draft-2026-09-11"
 PARTICIPANT_COOKIE = "library_study_participant"
@@ -1740,6 +1741,17 @@ def row_context(row: pd.Series, text_column: str) -> Dict[str, str]:
     return context
 
 
+def pipeline_sha256() -> str:
+    source = Path(__file__)
+    if source.is_file():
+        return hashlib.sha256(source.read_bytes()).hexdigest()
+    if PIPELINE_DIGEST_PATH.is_file():
+        digest = PIPELINE_DIGEST_PATH.read_text(encoding="ascii").strip()
+        if re.fullmatch(r"[0-9a-f]{64}", digest):
+            return digest
+    raise RuntimeError("The packaged analysis fingerprint is missing or invalid.")
+
+
 def run_analysis(task_id: str, data_source_id: str, job_id: str) -> None:
     try:
         state = store.load_task_snapshot(task_id)
@@ -1768,7 +1780,7 @@ def run_analysis(task_id: str, data_source_id: str, job_id: str) -> None:
             "dataset_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "model": next((item for item in run_model.list_models() if item["name"] == run_model.model), {"name": run_model.model}),
             "app_version": APP_VERSION, "temperature": 0, "thinking": False,
-            "pipeline_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "pipeline_sha256": pipeline_sha256(),
             "question": state.active_question,
         })
         try:

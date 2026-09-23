@@ -445,6 +445,8 @@ def self_test():
     import app
     from http.server import ThreadingHTTPServer
 
+    assert len(app.pipeline_sha256()) == 64
+
     class QuietHandler(app.Handler):
         def log_message(self, format, *args):
             pass

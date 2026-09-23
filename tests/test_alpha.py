@@ -13,6 +13,18 @@ import app
 
 
 class AlphaTests(unittest.TestCase):
+    def test_pipeline_fingerprint_in_source_and_frozen_layout(self):
+        source_digest = app.pipeline_sha256()
+        self.assertEqual(len(source_digest), 64)
+        with tempfile.TemporaryDirectory() as folder:
+            digest_path = Path(folder) / "pipeline.sha256"
+            digest_path.write_text(source_digest + "\n", encoding="ascii")
+            with patch.object(app, "__file__", str(Path(folder) / "missing-app.py")), patch.object(app, "PIPELINE_DIGEST_PATH", digest_path):
+                self.assertEqual(app.pipeline_sha256(), source_digest)
+                digest_path.write_text("invalid", encoding="ascii")
+                with self.assertRaisesRegex(RuntimeError, "fingerprint"):
+                    app.pipeline_sha256()
+
     def test_local_boundary(self):
         for name in ("qwen3.5:cloud", "foo-cloud", "../../bad model"):
             with self.assertRaises(ValueError):

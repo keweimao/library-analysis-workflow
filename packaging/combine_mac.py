@@ -10,7 +10,7 @@ import tempfile
 def combine(arm_archive, intel_archive, output):
     with tempfile.TemporaryDirectory() as temporary:
         work = Path(temporary)
-        stage = work / "LibraryAnalysis-0.2.0-alpha"
+        stage = work / "LibraryAnalysis-0.2.0-alpha.3"
         stage.mkdir()
         for label, archive in (("Apple Silicon", arm_archive), ("Intel", intel_archive)):
             extracted = work / label.replace(" ", "")

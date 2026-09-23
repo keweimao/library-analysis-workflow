@@ -53,7 +53,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.label }}
-          path: dist/LibraryAnalysis-0.2.0-alpha${{ runner.os == 'Windows' && '.2' || '' }}-${{ matrix.label }}.zip
+          path: dist/LibraryAnalysis-0.2.0-alpha.3-${{ matrix.label }}.zip
           if-no-files-found: error
           retention-days: 30
 
@@ -73,12 +73,12 @@ jobs:
       - name: Combine Mac binaries
         run: |
           python packaging/combine_mac.py \
-            artifacts/arm/LibraryAnalysis-0.2.0-alpha-macOS-AppleSilicon.zip \
-            artifacts/intel/LibraryAnalysis-0.2.0-alpha-macOS-Intel.zip \
-            dist/LibraryAnalysis-0.2.0-alpha-macOS.zip
+            artifacts/arm/LibraryAnalysis-0.2.0-alpha.3-macOS-AppleSilicon.zip \
+            artifacts/intel/LibraryAnalysis-0.2.0-alpha.3-macOS-Intel.zip \
+            dist/LibraryAnalysis-0.2.0-alpha.3-macOS.zip
       - uses: actions/upload-artifact@v4
         with:
           name: macOS
-          path: dist/LibraryAnalysis-0.2.0-alpha-macOS.zip
+          path: dist/LibraryAnalysis-0.2.0-alpha.3-macOS.zip
           if-no-files-found: error
           retention-days: 30

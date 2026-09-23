@@ -1,6 +1,7 @@
 """Build a native desktop bundle on the current operating system."""
 
 import os
+import hashlib
 from pathlib import Path
 import shutil
 import subprocess
@@ -11,18 +12,23 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dist"
-VERSION = "0.2.0-alpha.2" if sys.platform == "win32" else "0.2.0-alpha"
+VERSION = "0.2.0-alpha.3"
 
 
 def build():
     if sys.platform not in {"darwin", "win32"}:
         raise SystemExit("Build desktop packages on macOS or Windows.")
     OUT.mkdir(exist_ok=True)
+    build_dir = ROOT / ".build"
+    build_dir.mkdir(exist_ok=True)
+    digest_path = build_dir / "pipeline.sha256"
+    digest_path.write_text(hashlib.sha256((ROOT / "app.py").read_bytes()).hexdigest() + "\n", encoding="ascii")
     subprocess.run([
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
         "--console" if sys.platform == "win32" else "--windowed",
         "--onedir", "--name", "LibraryAnalysis", "--add-data",
-        f"{ROOT / 'static'}{os.pathsep}static", "--distpath", str(OUT / "desktop-build"),
+        f"{ROOT / 'static'}{os.pathsep}static", "--add-data",
+        f"{digest_path}{os.pathsep}.", "--distpath", str(OUT / "desktop-build"),
         "--workpath", str(ROOT / ".build" / "pyinstaller"),
         "--specpath", str(ROOT / ".build"), str(ROOT / "windows_cli.py" if sys.platform == "win32" else ROOT / "desktop.py"),
     ], cwd=ROOT, check=True)
