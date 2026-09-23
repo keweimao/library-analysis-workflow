@@ -1,0 +1,18 @@
+LIBRARY ANALYSIS 0.2.0-alpha
+
+1. Extract the whole ZIP first.
+2. Double-click Start Library Analysis.command (Mac) or Start Library Analysis.cmd (Windows).
+3. Follow the setup progress in the terminal window. Python 3.12-3.14 is required.
+4. If prompted, install Ollama from the official page that opens, then return and press Enter.
+5. Choose a model and wait for its download. Your browser opens automatically.
+
+Keep the terminal open while using the app. Ctrl+C stops it.
+Run the same launcher next time. Your data is stored separately and retained.
+Start with the included synthetic sample_library_survey.csv.
+
+Full instructions: docs/INSTALL.md
+Workflow overview: docs/architecture.md
+
+This is an unsigned source distribution for local alpha testing. Windows installation
+must be verified on the target PC. Managed computers may require normal IT approval.
+No survey data or participant records are included. Research study mode is disabled.

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Survey Analysis Workflow</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <section id="consentGate" class="consent-gate" hidden>
+      <div class="consent-shell">
+        <div class="consent-intro">
+          <span class="eyebrow">Research participation</span>
+          <h1>AI-Assisted Survey Comment Analysis</h1>
+          <p>Review the study information and choose whether to participate before opening the analysis workspace.</p>
+          <span class="draft-notice">Draft workflow for local testing. Use approved consent text before participant deployment.</span>
+        </div>
+        <form id="consentForm" class="consent-form">
+          <div id="consentContent" class="consent-content"></div>
+          <section class="consent-section pre-study-section">
+            <div>
+              <span class="eyebrow">Optional background questions</span>
+              <h2>Before you begin</h2>
+              <p>These answers help the research team interpret usability feedback. You may skip them.</p>
+            </div>
+            <div id="preStudyQuestions" class="question-grid"></div>
+          </section>
+          <section class="consent-decision">
+            <label class="check-row"><input id="ageConfirmed" type="checkbox" /> <span>I confirm that I am at least 18 years old.</span></label>
+            <label class="check-row"><input id="consentAccepted" type="checkbox" /> <span>I have read the information above and voluntarily agree to participate.</span></label>
+            <div class="consent-actions">
+              <button id="declineConsent" class="secondary-button" type="button">I do not agree</button>
+              <button id="enterStudy" type="submit">Agree and continue</button>
+            </div>
+            <p id="consentError" class="form-error" role="alert"></p>
+          </section>
+        </form>
+      </div>
+    </section>
+
+    <div id="appShell" class="app-shell" hidden>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">A</span>
+        <div class="brand-copy">
+          <strong>Analysis Tasks</strong>
+          <small>local text workflow</small>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="newTask" class="secondary-button" type="button">New task</button>
+        <button id="settingsButton" class="icon-button" type="button" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <div id="taskList" class="task-list"></div>
+
+      <section class="side-section">
+        <h2>Data</h2>
+        <label class="upload">
+          <input id="csvInput" type="file" accept=".csv,text/csv" />
+          <span id="uploadLabel">Load CSV Data</span>
+        </label>
+        <div id="dataList" class="data-list"></div>
+      </section>
+
+      <section class="side-section">
+        <h2>Model</h2>
+        <div id="modelStatus" class="status-pill">checking</div>
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <header class="task-header">
+        <div>
+          <h1>Interactive Language Models for Data Analysis</h1>
+          <p id="activeQuestion">Discover insights from text through human-AI conversations.</p>
+        </div>
+        <div class="actions">
+          <button id="studyButton" class="icon-button" type="button" title="Review consent and study responses" aria-label="Review consent and study responses">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+          </button>
+          <button id="runAnalysis" type="button">Run analysis</button>
+          <button id="cancelAnalysis" class="secondary-button" type="button" hidden>Stop</button>
+          <button id="reviewRows" class="secondary-button" type="button">Review comments</button>
+          <button id="exportReview" class="icon-button" type="button" aria-label="Export analysis and feedback" title="Export analysis and feedback"></button>
+        </div>
+      </header>
+
+      <section class="variable-strip" aria-label="Topics to track">
+        <div class="variable-toolbar">
+          <span>Topics to track</span>
+          <button id="addVariable" class="mini-button" type="button">Topic</button>
+        </div>
+        <div id="variables"></div>
+      </section>
+
+      <section class="content">
+        <div class="chat-panel">
+          <div id="messages" class="messages"></div>
+          <section id="studyPrompt" class="study-prompt" hidden>
+            <div class="study-prompt-header">
+              <div><span class="eyebrow">Optional study check-in</span><strong>Tell us about this experience</strong></div>
+              <button id="dismissStudyPrompt" class="icon-button compact" type="button" aria-label="Hide study check-in">×</button>
+            </div>
+            <div id="duringStudyQuestions" class="question-grid compact-questions"></div>
+            <button id="saveStudyResponses" class="secondary-button" type="button">Save responses</button>
+            <small>Responses inferred from chat are marked for your review.</small>
+          </section>
+          <form id="chatForm" class="composer">
+            <textarea
+              id="messageInput"
+              rows="3"
+              placeholder="Ask what should be analyzed, provide labels, or type: run analysis"
+            ></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
+        <aside class="results-panel">
+          <section>
+            <h2>Progress</h2>
+            <div class="progress-shell">
+              <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <p id="progressText">Idle</p>
+          </section>
+
+          <section>
+            <h2>Aggregates</h2>
+            <div id="aggregates" class="aggregates"></div>
+          </section>
+        </aside>
+      </section>
+
+      <footer class="references">
+        <h2>Data and References</h2>
+        <div id="references"></div>
+      </footer>
+    </main>
+    </div>
+
+    <dialog id="taskDialog" class="modal">
+      <form method="dialog" class="modal-surface">
+        <header>
+          <h2>New Task</h2>
+          <button class="icon-button" value="cancel" type="submit">×</button>
+        </header>
+        <div class="template-grid">
+          <button class="template-card" type="button" data-template-id="">
+            <strong>Blank task</strong>
+            <span>Start with no prompt, variables, labels, or data.</span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="modal">
+      <form method="dialog" class="modal-surface">
+        <header>
+          <h2>Settings</h2>
+          <button class="icon-button" value="cancel" type="submit">×</button>
+        </header>
+        <section class="settings-section">
+          <div class="settings-copy">
+            <span class="eyebrow">Local AI</span>
+            <h3>Analysis model</h3>
+            <p>The primary model interprets prompts, discovers labels, and classifies comments. Models run through Ollama on this computer.</p>
+          </div>
+          <label>
+            Primary model
+            <select id="modelSelect"></select>
+          </label>
+          <div id="selectedModelSummary" class="selected-model-summary"></div>
+          <p class="muted">Local processing only. Downloading a model needs internet access; analysis does not use cloud AI.</p>
+          <div class="question-grid">
+            <label>Comments per batch <input id="batchSize" type="number" min="1" max="12" value="3" /></label>
+            <label>Context budget <select id="contextLength"><option value="4096">4K · lower memory</option><option value="8192">8K · more topics</option><option value="16384">16K · longer comments</option></select></label>
+          </div>
+          <button id="saveSettings" type="button">Save settings</button>
+          <div id="modelList" class="model-list"></div>
+          <div class="pull-row">
+            <label>
+              Additional model to pull
+              <span>Find model names in the <a id="ollamaLibrary" href="https://ollama.com/library" target="_blank" rel="noreferrer">Ollama library</a>.</span>
+            </label>
+            <div class="pull-controls">
+              <input id="modelInput" type="text" placeholder="Example: llama3.2" />
+              <button id="pullModel" class="secondary-button" type="button">Pull</button>
+            </div>
+            <div id="pullProgress" class="pull-progress" hidden>
+              <div class="progress-shell">
+                <div id="pullProgressBar" class="progress-bar"></div>
+              </div>
+              <p id="pullProgressText">Idle</p>
+            </div>
+          </div>
+        </section>
+      </form>
+    </dialog>
+
+    <dialog id="consentDialog" class="modal consent-dialog">
+      <div class="modal-surface">
+        <header>
+          <div><span class="eyebrow">Study record</span><h2>Consent and responses</h2></div>
+          <button id="closeConsent" class="icon-button" type="button" aria-label="Close consent">×</button>
+        </header>
+        <div class="consent-review-body">
+          <div id="consentReviewContent" class="consent-content compact-consent"></div>
+          <div id="studyRecordSummary" class="study-record-summary"></div>
+          <div id="reviewStudyQuestions" class="question-grid"></div>
+          <div class="consent-review-actions">
+            <button id="withdrawConsent" class="secondary-button danger-button" type="button">Withdraw consent</button>
+            <button id="updateStudyResponses" type="button">Save response changes</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="evidenceDialog" class="modal">
+      <div class="modal-surface evidence-surface">
+        <header>
+          <div>
+            <h2 id="evidenceTitle">Source comments</h2>
+            <p id="evidenceSummary" class="muted"></p>
+          </div>
+          <button id="closeEvidence" class="icon-button" type="button" aria-label="Close source comments">×</button>
+        </header>
+        <div id="evidenceRows" class="evidence-rows"></div>
+      </div>
+    </dialog>
+
+    <dialog id="interactionDialog" class="modal interaction-dialog">
+      <form id="interactionForm" class="modal-surface">
+        <header>
+          <div>
+            <span id="interactionEyebrow" class="eyebrow">Update</span>
+            <h2 id="interactionTitle">Edit item</h2>
+          </div>
+          <button id="closeInteraction" class="icon-button" type="button" aria-label="Close"></button>
+        </header>
+        <div class="interaction-body">
+          <p id="interactionMessage" class="muted"></p>
+          <label id="interactionField" class="interaction-field">
+            <span id="interactionLabel">Value</span>
+            <input id="interactionInput" type="text" autocomplete="off" />
+            <textarea id="interactionTextarea" rows="5"></textarea>
+          </label>
+          <div class="interaction-actions">
+            <button id="cancelInteraction" class="secondary-button" type="button">Cancel</button>
+            <button id="confirmInteraction" type="submit">Save</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
