@@ -41,9 +41,13 @@ jobs:
           } while (-not $test.HasExited -and (Get-Date) -lt $deadline)
           if (-not $test.HasExited) {
             Stop-Process -Id $test.Id -Force
+            if (Test-Path "$env:TEMP\LibraryAnalysis-self-test.log") { Get-Content "$env:TEMP\LibraryAnalysis-self-test.log" }
             throw 'Desktop smoke test timed out after 45 seconds'
           }
-          if ($test.ExitCode -ne 0) { throw "Desktop smoke test failed: $($test.ExitCode)" }
+          if ($test.ExitCode -ne 0) {
+            if (Test-Path "$env:TEMP\LibraryAnalysis-self-test.log") { Get-Content "$env:TEMP\LibraryAnalysis-self-test.log" }
+            throw "Desktop smoke test failed: $($test.ExitCode)"
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.label }}

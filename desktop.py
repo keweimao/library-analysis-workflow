@@ -445,7 +445,11 @@ def self_test():
     import app
     from http.server import ThreadingHTTPServer
 
-    server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
+    class QuietHandler(app.Handler):
+        def log_message(self, format, *args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), QuietHandler)
     server.daemon_threads = True
     server.block_on_close = False
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -476,9 +480,12 @@ if __name__ == "__main__":
         try:
             outcome = self_test()
         except Exception:
-            traceback.print_exc()
+            with (Path(tempfile.gettempdir()) / "LibraryAnalysis-self-test.log").open("w", encoding="utf-8") as log:
+                traceback.print_exc(file=log)
             outcome = 1
-        sys.stdout.flush()
-        sys.stderr.flush()
+        if sys.stdout is not None:
+            sys.stdout.flush()
+        if sys.stderr is not None:
+            sys.stderr.flush()
         os._exit(outcome)
     sys.exit(main())
