@@ -10,8 +10,10 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import threading
 import urllib.error
 import urllib.request
+import traceback
 import zipfile
 
 from PySide6.QtCore import QThread, QUrl, Signal
@@ -437,28 +439,31 @@ class DesktopWindow(QMainWindow):
 
 
 def self_test():
-    import tempfile
-    with tempfile.TemporaryDirectory() as folder:
-        os.environ["LIBRARY_DATA_DIR"] = folder
-        os.environ["LIBRARY_STUDY_MODE"] = "0"
-        import app
-        from http.server import ThreadingHTTPServer
-        import threading
+    folder = Path(tempfile.mkdtemp(prefix="library-desktop-smoke-"))
+    os.environ["LIBRARY_DATA_DIR"] = str(folder)
+    os.environ["LIBRARY_STUDY_MODE"] = "0"
+    import app
+    from http.server import ThreadingHTTPServer
 
-        server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
-        threading.Thread(target=server.serve_forever, daemon=True).start()
-        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/api/health") as response:
+    server = ThreadingHTTPServer(("127.0.0.1", 0), app.Handler)
+    server.daemon_threads = True
+    server.block_on_close = False
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/api/health", timeout=10) as response:
             assert json.load(response)["app"] == "library-analysis"
-        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/") as response:
+        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_port}/", timeout=10) as response:
             assert b"Interactive Language Models" in response.read()
+    finally:
         server.shutdown()
         server.server_close()
+        thread.join(timeout=10)
+        shutil.rmtree(folder, ignore_errors=True)
     return 0
 
 
 def main():
-    if "--self-test" in sys.argv:
-        return self_test()
     if sys.platform not in OLLAMA_ASSETS:
         raise RuntimeError("This desktop build supports macOS and Windows only.")
     application = QApplication(sys.argv)
@@ -472,4 +477,13 @@ def main():
 
 
 if __name__ == "__main__":
+    if "--self-test" in sys.argv:
+        try:
+            outcome = self_test()
+        except Exception:
+            traceback.print_exc()
+            outcome = 1
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(outcome)
     sys.exit(main())
