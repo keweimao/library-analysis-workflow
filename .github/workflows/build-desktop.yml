@@ -48,10 +48,12 @@ jobs:
             if (Test-Path "$env:TEMP\LibraryAnalysis-self-test.log") { Get-Content "$env:TEMP\LibraryAnalysis-self-test.log" }
             throw "Desktop smoke test failed: $($test.ExitCode)"
           }
+          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe start --smoke --no-browser
+          if ($LASTEXITCODE -ne 0) { throw "Windows local server start failed: $LASTEXITCODE" }
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.label }}
-          path: dist/LibraryAnalysis-0.2.0-alpha-${{ matrix.label }}.zip
+          path: dist/LibraryAnalysis-0.2.0-alpha${{ runner.os == 'Windows' && '.2' || '' }}-${{ matrix.label }}.zip
           if-no-files-found: error
           retention-days: 30
 

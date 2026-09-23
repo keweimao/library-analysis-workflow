@@ -11,7 +11,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dist"
-VERSION = "0.2.0-alpha"
+VERSION = "0.2.0-alpha.2" if sys.platform == "win32" else "0.2.0-alpha"
 
 
 def build():
@@ -19,11 +19,12 @@ def build():
         raise SystemExit("Build desktop packages on macOS or Windows.")
     OUT.mkdir(exist_ok=True)
     subprocess.run([
-        sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--windowed",
+        sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
+        "--console" if sys.platform == "win32" else "--windowed",
         "--onedir", "--name", "LibraryAnalysis", "--add-data",
         f"{ROOT / 'static'}{os.pathsep}static", "--distpath", str(OUT / "desktop-build"),
         "--workpath", str(ROOT / ".build" / "pyinstaller"),
-        "--specpath", str(ROOT / ".build"), str(ROOT / "desktop.py"),
+        "--specpath", str(ROOT / ".build"), str(ROOT / "windows_cli.py" if sys.platform == "win32" else ROOT / "desktop.py"),
     ], cwd=ROOT, check=True)
     label = "macOS-" + ("AppleSilicon" if os.uname().machine == "arm64" else "Intel") if sys.platform == "darwin" else "Windows-x64"
     archive = OUT / f"LibraryAnalysis-{VERSION}-{label}.zip"
@@ -36,6 +37,8 @@ def build():
         else:
             folder = OUT / "desktop-build" / "LibraryAnalysis"
             shutil.copytree(folder, stage / folder.name)
+            shutil.copy2(ROOT / "packaging" / "Install Library Analysis.cmd", stage)
+            shutil.copy2(ROOT / "packaging" / "Start Library Analysis.cmd", stage)
         shutil.copy2(ROOT / "sample_library_survey.csv", stage)
         shutil.copy2(ROOT / "packaging" / "DESKTOP.md", stage / "START HERE.md")
         if sys.platform == "darwin":

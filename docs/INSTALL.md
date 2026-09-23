@@ -7,11 +7,11 @@ Version: 0.2.0-alpha. Updated September 23, 2026.
 The compiled desktop packages include Python and the application dependencies. They do not require Python or Ollama to be installed separately. Download the package for your operating system from the [desktop release](https://github.com/keweimao/library-analysis-workflow/releases/tag/v0.2.0-desktop-alpha.1), extract it, and open the application:
 
 - macOS: `LibraryAnalysis-0.2.0-alpha-macOS.zip` contains an Apple Silicon app and an Intel app. Open the one matching your Mac.
-- Windows x64: `LibraryAnalysis-0.2.0-alpha-Windows-x64.zip` contains `LibraryAnalysis/LibraryAnalysis.exe`.
+- Windows x64: `LibraryAnalysis-0.2.0-alpha.2-Windows-x64.zip` contains separate `Install Library Analysis.cmd` and `Start Library Analysis.cmd` launchers.
 
-Select a model and click **Install and open**. The setup window downloads a verified Ollama runtime into your user folder if needed, then downloads the model and shows progress. A browser window opens when ready. Keep the desktop window open while using the application; later launches reuse the downloads and saved work. **Open analysis** reopens the browser.
+On Windows, run **Install Library Analysis.cmd** once to download the local runtime and model with progress. Then run **Start Library Analysis.cmd** to check the backend and open the browser. Keep the start window open while using the app. On Mac, select a model and click **Install and open**; keep the desktop window open. Later launches reuse downloads and saved work.
 
-The first download may be several gigabytes. Qwen 9B is intended for a computer with roughly 32 GB RAM; the smaller 4B option is selected automatically below 24 GiB and needs more careful result review. A managed computer may still block unsigned applications or downloads. Use the operating system's normal Open/security workflow where permitted; these packages are not signed or notarized.
+The first download may be several gigabytes. Qwen 9B is intended for a computer with roughly 32 GB RAM; the smaller 4B option is selected by default below 24 GiB and needs more careful result review. A managed computer may still block unsigned applications or downloads. Use the operating system's normal Open/security workflow where permitted; these packages are not signed or notarized.
 
 The included CSV has synthetic sample comments. Saved tasks, imported CSV copies, and downloaded models stay in the user's application-data folder. The first run needs internet; later local analysis can work offline. See [the package's START HERE guide](../packaging/DESKTOP.md) for storage locations and updates.
 
@@ -81,7 +81,7 @@ From the repository, run `python3 packaging/build.py` for source ZIPs. For compi
 
 The launcher can be tested in an isolated directory with `python3 launcher.py --home /tmp/library-test --skip-model --no-browser --port 8021`. This skips model preparation only; analysis still requires a local model.
 
-The compiled Mac and Windows apps pass local HTTP smoke tests in native build jobs. Windows first-run setup also passes a runtime download, local service startup, and small-model pull test. Installation and performance on a specific user's computer remain to be checked.
+The compiled Mac and Windows apps pass local HTTP smoke tests in native build jobs. Windows first-run setup also passes a runtime download, local service startup, and small-model pull test. Installation and performance on a specific user's computer remain to be checked. See [Windows packaging](WINDOWS_PACKAGING.md) for the two-step design and limitations.
 
 ## Future Hosted Deployment
 

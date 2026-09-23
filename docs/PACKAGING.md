@@ -18,7 +18,7 @@ The runtime archive is pinned in `desktop.py`, including its version and checksu
 
 ## Build and Verify
 
-Install `requirements-desktop.txt` on each target OS and run `python packaging/build_desktop.py`. Native binaries cannot be built reliably for another operating system from one machine. The GitHub Actions workflow builds Windows x64, Intel Mac, and Apple Silicon Mac independently, runs each frozen binary's local HTTP smoke test, and combines the two Mac apps into one ZIP. It produces two distribution packages: Mac and Windows.
+Install `requirements-desktop.txt` on each target OS and run `python packaging/build_desktop.py`. Native binaries cannot be built reliably for another operating system from one machine. The GitHub Actions workflow builds Windows x64, Intel Mac, and Apple Silicon Mac independently, runs each frozen binary's local HTTP smoke test, and combines the two Mac apps into one ZIP. It produces two distribution packages: Mac and Windows. The Windows package uses separate console-visible install and start scripts; see [Windows packaging](WINDOWS_PACKAGING.md).
 
 For source-only packages, `python packaging/build.py` builds separate ZIPs with the `source-` name. Source packages still require a Python installation and are not the recommended end-user download. A separate Windows workflow exercises the first-run runtime download, startup, and a small model pull. All package builds use explicit file lists or app resources; no real datasets or internal records are included.
 
