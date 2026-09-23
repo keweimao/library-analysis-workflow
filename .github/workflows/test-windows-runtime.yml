@@ -19,8 +19,8 @@ jobs:
       - name: Install and start from packaged executable
         shell: pwsh
         run: |
-          $home = Join-Path $env:RUNNER_TEMP 'library-packaged-test'
-          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe install --model qwen3.5:0.8b --home $home
+          $profilePath = Join-Path $env:RUNNER_TEMP 'library-packaged-test'
+          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe install --model qwen3.5:0.8b --home $profilePath
           if ($LASTEXITCODE -ne 0) { throw "Packaged installation failed: $LASTEXITCODE" }
-          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe start --health-only --no-browser --home $home
+          & .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe start --health-only --no-browser --home $profilePath
           if ($LASTEXITCODE -ne 0) { throw "Packaged startup failed: $LASTEXITCODE" }
