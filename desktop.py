@@ -289,7 +289,7 @@ class DesktopWindow(QMainWindow):
         for name, label in MODELS:
             self.choice.addItem(label, name)
         memory = ram_gb()
-        if memory is not None and memory < 16:
+        if memory is not None and memory < 24:
             self.choice.setCurrentIndex(1)
             layout.addWidget(QLabel("This computer has limited memory. The smaller model is selected."))
         layout.addWidget(self.choice)
