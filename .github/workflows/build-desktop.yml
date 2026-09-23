@@ -30,10 +30,19 @@ jobs:
         run: dist/desktop-build/LibraryAnalysis.app/Contents/MacOS/LibraryAnalysis --self-test
       - name: Smoke test Windows application
         if: runner.os == 'Windows'
-        timeout-minutes: 5
+        timeout-minutes: 2
         shell: pwsh
         run: |
-          $test = Start-Process -FilePath .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe -ArgumentList '--self-test' -Wait -PassThru
+          $test = Start-Process -FilePath .\dist\desktop-build\LibraryAnalysis\LibraryAnalysis.exe -ArgumentList '--self-test' -PassThru
+          $deadline = (Get-Date).AddSeconds(45)
+          do {
+            Start-Sleep -Milliseconds 500
+            $test.Refresh()
+          } while (-not $test.HasExited -and (Get-Date) -lt $deadline)
+          if (-not $test.HasExited) {
+            Stop-Process -Id $test.Id -Force
+            throw 'Desktop smoke test timed out after 45 seconds'
+          }
           if ($test.ExitCode -ne 0) { throw "Desktop smoke test failed: $($test.ExitCode)" }
       - uses: actions/upload-artifact@v4
         with:
