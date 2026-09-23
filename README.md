@@ -16,7 +16,7 @@ The app supports:
 
 ## Run
 
-For desktop packages, follow [installation and first run](docs/INSTALL.md). The compiled Mac and Windows downloads include Python and application dependencies. Their setup window downloads a local Ollama runtime and model with progress.
+For desktop packages, follow [installation and first run](docs/INSTALL.md). The compiled Mac and Windows downloads include Python and application dependencies. Their setup window downloads a local Ollama runtime and model with progress. See [desktop packaging](docs/PACKAGING.md) for the build and first-run design.
 
 ```bash
 cd library-analysis-workflow
