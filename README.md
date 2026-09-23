@@ -16,7 +16,7 @@ The app supports:
 
 ## Run
 
-For desktop packages, follow [installation and first run](docs/INSTALL.md). The compiled Mac and Windows downloads include Python and application dependencies. Their setup window downloads a local Ollama runtime and model with progress. See [desktop packaging](docs/PACKAGING.md) for the build and first-run design.
+Download the [Mac or Windows desktop package](https://github.com/keweimao/library-analysis-workflow/releases/tag/v0.2.0-desktop-alpha.1) and follow [installation and first run](docs/INSTALL.md). The compiled downloads include Python and application dependencies. Their setup window downloads a local Ollama runtime and model with progress. See [desktop packaging](docs/PACKAGING.md) for the build and first-run design.
 
 ```bash
 cd library-analysis-workflow
