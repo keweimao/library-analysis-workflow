@@ -80,7 +80,7 @@ def check_url(url):
             response.read()
 
 
-def start(profile, no_browser=False, smoke=False):
+def start(profile, no_browser=False, smoke=False, health_only=False):
     settings = read_settings(profile)
     model = settings.get("model")
     if not model and not smoke:
@@ -94,6 +94,10 @@ def start(profile, no_browser=False, smoke=False):
             binary = worker.prepare_binary()
             print("Starting the local model service...", flush=True)
             base, process = worker.start_ollama(binary)
+            with api(base, "tags") as response:
+                installed = {item.get("name") for item in json.load(response).get("models", [])}
+            if model not in installed and model + ":latest" not in installed:
+                raise RuntimeError(f"Model {model} is missing. Run Install Library Analysis.cmd again.")
         else:
             base = "http://127.0.0.1:1"
         os.environ.update({
@@ -114,7 +118,7 @@ def start(profile, no_browser=False, smoke=False):
         thread.start()
         check_url(url)
         print(f"Library Analysis is ready at {url}", flush=True)
-        if smoke:
+        if smoke or health_only:
             return
         if not no_browser:
             webbrowser.open(url)
@@ -139,6 +143,7 @@ def main():
     parser.add_argument("--home", type=Path, help=argparse.SUPPRESS)
     parser.add_argument("--no-browser", action="store_true")
     parser.add_argument("--smoke", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--health-only", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     profile = args.home or home_directory()
     profile.mkdir(parents=True, exist_ok=True)
@@ -150,7 +155,7 @@ def main():
                 raise ValueError("Only local models are supported.")
             install(profile, model)
         else:
-            start(profile, args.no_browser, args.smoke)
+            start(profile, args.no_browser, args.smoke, args.health_only)
     finally:
         handle.close()
 
