@@ -1,13 +1,13 @@
 # Library Analysis: Installation and First Run
 
-Version: 0.2.0-alpha. Updated September 23, 2026.
+Version: 0.2.0-alpha.3. Updated September 23, 2026.
 
 ## Desktop Download (Recommended)
 
-The compiled desktop packages include Python and the application dependencies. They do not require Python or Ollama to be installed separately. Download the package for your operating system from the [desktop release](https://github.com/keweimao/library-analysis-workflow/releases/tag/v0.2.0-desktop-alpha.2), extract it, and open the application:
+The compiled desktop packages include Python and the application dependencies. They do not require Python or Ollama to be installed separately. Download the package for your operating system from the [desktop release](https://github.com/keweimao/library-analysis-workflow/releases/tag/v0.2.0-desktop-alpha.3), extract it, and open the application:
 
-- macOS: `LibraryAnalysis-0.2.0-alpha-macOS.zip` contains an Apple Silicon app and an Intel app. Open the one matching your Mac.
-- Windows x64: `LibraryAnalysis-0.2.0-alpha.2-Windows-x64.zip` contains separate `Install Library Analysis.cmd` and `Start Library Analysis.cmd` launchers.
+- macOS: `LibraryAnalysis-0.2.0-alpha.3-macOS.zip` contains an Apple Silicon app and an Intel app. Open the one matching your Mac.
+- Windows x64: `LibraryAnalysis-0.2.0-alpha.3-Windows-x64.zip` contains separate `Install Library Analysis.cmd` and `Start Library Analysis.cmd` launchers.
 
 On Windows, run **Install Library Analysis.cmd** once to download the local runtime and model with progress. Then run **Start Library Analysis.cmd** to check the backend and open the browser. Keep the start window open while using the app. On Mac, select a model and click **Install and open**; keep the desktop window open. Later launches reuse downloads and saved work.
 
