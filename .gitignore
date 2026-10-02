@@ -1,8 +1,14 @@
 data/
 dist/
 communications/
-research/irb/**/private-correspondence/
-research/irb/**/restricted-data/
+docs/internal/
+research/
+meetings/
+user_study/
+output/
+*.pdf
+*.docx
+*.eml
 .pycache/
 .venv/
 .build/
